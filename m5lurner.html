@@ -144,7 +144,7 @@
 
     <script>
         async function fetchFirmwareData() {
-            const response = await fetch('https://raw.githubusercontent.com/bmorcelli/M5Stack-json-fw/main/script/all_device_firmware.json');
+            const response = await fetch('https://m5burner-api.m5stack.com/api/firmware');
             const data = await response.json();
             return data;
         }
@@ -264,4 +264,5 @@
         init();
     </script>
 </body>
+
 </html>
