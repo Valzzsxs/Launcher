@@ -535,8 +535,10 @@ header {
   top: calc(var(--header-height) + 8px);
   z-index: 6;
   max-width: 1080px;
-  /* margin: 0 auto clamp(16px, 4vw, 28px); */
+  width: 100%;
+  margin: 0 auto clamp(16px, 4vw, 28px);
   padding: 0 clamp(16px, 3.5vw, 28px);
+  box-sizing: border-box;
 }
 
 .tile--summary {
