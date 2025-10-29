@@ -37,7 +37,14 @@ if (!existsSync(pagesDir)) {
 
 copyRecursive(path.join(projectRoot, 'assets'), path.join(buildDir, 'assets'));
 copyRecursive(path.join(projectRoot, 'support_files'), path.join(buildDir, 'support_files'));
+copyRecursive(path.join(projectRoot, 'src', 'assets'), path.join(buildDir, 'assets'));
 
-for (const releaseDir of ['Beta', 'Release']) {
-  copyRecursive(path.join(projectRoot, releaseDir), path.join(buildDir, releaseDir));
+const manifestSource = path.join(projectRoot, 'src', 'manifest.json');
+if (existsSync(manifestSource)) {
+  cpSync(manifestSource, path.join(buildDir, 'manifest.json'));
 }
+
+for (const binsDir of ['binsBeta', 'binsRelease']) {
+  copyRecursive(path.join(projectRoot, 'src', binsDir), path.join(buildDir, binsDir));
+}
+

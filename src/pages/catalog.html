@@ -8,14 +8,20 @@
     <title>Launcher Firmware Catalog</title>
     <link rel="stylesheet" href="assets/css/main.css" />
   </head>
-  <body>
+  <body class="page-catalog">
     <header>
       <div class="navbar">
         <div class="brand">
           <p class="brand__title">Launcher Firmware Catalog</p>
-          <p class="brand__subtitle">Discover builds across M5Stack, LilyGO and ESP32 devices</p>
+          <p class="brand__subtitle">Discover builds across M5Stack, LilyGO, and ESP32 devices</p>
         </div>
-        <button class="navbar__toggle" type="button" aria-expanded="false" aria-controls="site-navigation" data-nav-toggle>
+        <button
+          class="navbar__toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="site-navigation"
+          data-nav-toggle
+        >
           Menu
         </button>
         <nav class="navbar__menu" id="site-navigation" data-nav tabindex="-1">
@@ -27,12 +33,12 @@
       </div>
     </header>
     <main>
-      <section class="hero" tabindex="-1">
+      <section class="hero hero--compact" tabindex="-1">
         <span class="hero__badge">Live data</span>
-        <h1 class="hero__title">Everything you need to flash Launcher builds manually.</h1>
+        <h1 class="hero__title">Explore the Launcher firmware catalog.</h1>
         <p class="hero__description">
-          Browse the official M5Burner catalog with enhanced filtering, version selection and direct download links.
-          Use the search box below to narrow down devices or jump to the Web Flasher for a guided experience.
+          Browse the official M5Burner feed with enhanced filtering, version selection, and direct downloads.
+          Search by device, author, or category—or jump to the Web Flasher for a guided experience.
         </p>
         <div class="tile">
           <span class="tile__label">Catalog status</span>
@@ -40,20 +46,24 @@
         </div>
       </section>
 
-      <section class="section" tabindex="-1">
+      <section class="section section--compact" tabindex="-1">
         <h2 class="section__heading">Filter and explore</h2>
-        <p class="section__lead">Search for device names, authors or categories and download the exact build you need.</p>
+        <p class="section__lead">Refine the list and download the exact build you need in just a few clicks.</p>
         <div class="catalog">
           <div class="catalog__controls">
             <input
               class="catalog__search"
               type="search"
-              placeholder="Search by device, author or tag"
+              placeholder="Search by device, author, or tag"
               aria-label="Search firmware"
               data-catalog-search
             />
             <select class="catalog__search" data-catalog-category aria-label="Filter by category">
               <option value="all">All categories</option>
+            </select>
+            <select class="catalog__search catalog__search--order" data-catalog-order aria-label="Order by">
+              <option value="downloads">Order by downloads</option>
+              <option value="name">Order by name</option>
             </select>
             <a class="button button--ghost" href="webflasher.html">Open Web Flasher</a>
           </div>

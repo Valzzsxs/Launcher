@@ -52,16 +52,14 @@ jobs:
             fi
           }
 
-          rm -rf Beta Release
-          mkdir -p Beta/bins Beta/manifests Release/bins Release/manifests
+          rm -rf src/binsBeta src/binsRelease
+          mkdir -p src/binsBeta src/binsRelease
 
-          download_release betaRelease beta Beta
-          download_release lastRelease last Release
+          download_release beta beta src/binsBeta
+          download_release last last src/binsRelease
 
-          find Beta -maxdepth 1 -type f -name '*.bin' -exec mv {} Beta/bins/ \;
-          find Release -maxdepth 1 -type f -name '*.bin' -exec mv {} Release/bins/ \;
-          find Beta -maxdepth 1 -type f -name '*.json' -exec mv {} Beta/manifests/ \;
-          find Release -maxdepth 1 -type f -name '*.json' -exec mv {} Release/manifests/ \;
+          # find Beta -maxdepth 1 -type f -name '*.bin' -exec mv {} src/binsBeta \;
+          # find Release -maxdepth 1 -type f -name '*.bin' -exec mv {} src/binsRelease\;
 
       - name: Build site
         run: npm run build
