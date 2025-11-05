@@ -1,4 +1,4 @@
-# Launcher
+﻿# Launcher
 Application Launcher for
 - M5Stack devices: Cardputer, M5StickC, M5StickC Plus, M5StickC Plus 2, Core (16Mb), Core2 & Tough and CoreS3;
 - Lyligo devices: T-Display S3 Touch, T-Deck, T-Embed, T-Embed CC1101;
@@ -47,7 +47,7 @@ Application Launcher for
 * Having an SD card is good for better experience, but not really needed. [SDCard Hat for M5StickCs](https://www.thingiverse.com/thing:6459069) 
 * You can learn more about how it works o [Launcher Wiki](https://github.com/bmorcelli/M5Stick-Launcher/wiki/Explaining-the-project).
 * Where/How do I find Binaries to launch -> [Obtaining binaries to launch](https://github.com/bmorcelli/M5Stick-Launcher/wiki/Obtaining-binaries-to-launch)
-* Now you can download binaries from [HERE!](https://bmorcelli.github.io/M5Stick-Launcher/m5lurner.html)
+* Now you can download binaries from [HERE!](https://bmorcelli.github.io/M5Stick-Launcher/catalog.html)
 
 ## How to Install
 * Use the Flasher: [Launcher Flasher](https://bmorcelli.github.io/M5Stick-Launcher/index.html).
@@ -64,5 +64,5 @@ Application Launcher for
 Sourcecode will be released in the future..
 
 ## Known Issues
-* UiFlow 1 doesn´t work with Launcher.. it uses an old MicroPython distro, that uses an old ESP-IDF distro with lots os secrets that I couldn´t figure out.
+* UiFlow 1 doesn't work with Launcher.. it uses an old MicroPython distro, that uses an old ESP-IDF distro with lots os secrets that I couldn't figure out.
 
