@@ -910,6 +910,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const deviceSection = document.querySelector<HTMLElement>("[data-device-section]");
   const installSection = document.querySelector<HTMLElement>("[data-install-section]");
   const installButton = document.querySelector<WebInstallButtonElement>("esp-web-install-button");
+  const downloadButton = document.querySelector<HTMLAnchorElement>("[data-download-button]");
   const manifestSummary = document.querySelector<HTMLElement>("[data-manifest-summary]");
 
   if (
@@ -917,6 +918,7 @@ document.addEventListener("DOMContentLoaded", () => {
     !vendorContainer ||
     !deviceContainer ||
     !installButton ||
+    !downloadButton ||
     !manifestSummary
   ) {
     return;
@@ -982,10 +984,17 @@ document.addEventListener("DOMContentLoaded", () => {
     manifestSummary.textContent = parts.length > 0 ? parts.join(" -> ") : summaryFallback;
   };
 
+  const hideDownloadButton = () => {
+    downloadButton.setAttribute("hidden", "");
+    downloadButton.removeAttribute("href");
+    downloadButton.removeAttribute("download");
+  };
+
   const hideInstallButton = () => {
     revokeManifestUrl();
     installButton.setAttribute("hidden", "");
     installButton.removeAttribute("manifest");
+    hideDownloadButton();
   };
 
   const resetDeviceDetails = (message?: string) => {
@@ -1053,6 +1062,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const binRelativePath = `bins${state.releaseValue}/Launcher-${device.id}.bin`;
     let binAbsolutePath = binRelativePath;
+    const downloadFileName = `Launcher-${device.id}.bin`;
 
     if (manifestBaseUrl) {
       try {
@@ -1061,6 +1071,10 @@ document.addEventListener("DOMContentLoaded", () => {
         console.warn("Unable to resolve firmware from manifest base path.", error);
       }
     }
+
+    downloadButton.href = binAbsolutePath;
+    downloadButton.download = downloadFileName;
+    downloadButton.removeAttribute("hidden");
 
     const manifest = {
       name: device.name,

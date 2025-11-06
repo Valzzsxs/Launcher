@@ -318,6 +318,11 @@ header {
   flex-wrap: wrap;
 }
 
+.card__actions--center {
+  justify-content: center;
+  align-items: center;
+}
+
 .tile {
   padding: 20px;
   border-radius: var(--radius-md);

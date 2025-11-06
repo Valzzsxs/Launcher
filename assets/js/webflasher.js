@@ -571,7 +571,6 @@ const injectDialogSurfaceStyles = (dialog) => {
       box-shadow: 0 34px 120px rgba(0, 221, 0, 0.25);
       backdrop-filter: blur(24px);
       color: var(--text);
-      // padding: 24px 28px 28px;
     }
     .container::before {
       background: rgba(12, 18, 21, 0.96);
@@ -782,11 +781,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const deviceSection = document.querySelector("[data-device-section]");
     const installSection = document.querySelector("[data-install-section]");
     const installButton = document.querySelector("esp-web-install-button");
+    const downloadButton = document.querySelector("[data-download-button]");
     const manifestSummary = document.querySelector("[data-manifest-summary]");
     if (!releaseContainer ||
         !vendorContainer ||
         !deviceContainer ||
         !installButton ||
+        !downloadButton ||
         !manifestSummary) {
         return;
     }
@@ -847,10 +848,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         manifestSummary.textContent = parts.length > 0 ? parts.join(" -> ") : summaryFallback;
     };
+    const hideDownloadButton = () => {
+        downloadButton.setAttribute("hidden", "");
+        downloadButton.removeAttribute("href");
+        downloadButton.removeAttribute("download");
+    };
     const hideInstallButton = () => {
         revokeManifestUrl();
         installButton.setAttribute("hidden", "");
         installButton.removeAttribute("manifest");
+        hideDownloadButton();
     };
     const resetDeviceDetails = (message) => {
         if (descriptionTarget) {
@@ -913,6 +920,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         const binRelativePath = `bins${state.releaseValue}/Launcher-${device.id}.bin`;
         let binAbsolutePath = binRelativePath;
+        const downloadFileName = `Launcher-${device.id}.bin`;
         if (manifestBaseUrl) {
             try {
                 binAbsolutePath = new URL(binRelativePath, manifestBaseUrl).toString();
@@ -921,6 +929,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.warn("Unable to resolve firmware from manifest base path.", error);
             }
         }
+        downloadButton.href = binAbsolutePath;
+        downloadButton.download = downloadFileName;
+        downloadButton.removeAttribute("hidden");
         const manifest = {
             name: device.name,
             new_install_prompt_erase: true,
