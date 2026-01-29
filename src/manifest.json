@@ -95,6 +95,14 @@
             "link": "https://shop.m5stack.com/products/m5sticks3-esp32s3-mini-iot-dev-kit?ref=Pirata",
             "family": "ESP32-S3",
             "id": "m5stack-sticks3"
+        },
+        {
+            "display": false,
+            "name": "DinMeter",
+            "description": "",
+            "link": "https://shop.m5stack.com/products/m5stack-din-meter-w-m5stamps3?ref=Pirata",
+            "family": "ESP32-S3",
+            "id": "m5stack-dinmeter"
         }
     ],
     "Headless": [
