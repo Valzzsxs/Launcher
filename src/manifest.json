@@ -97,7 +97,7 @@
             "id": "m5stack-sticks3"
         },
         {
-            "display": false,
+            "display": true,
             "name": "Arduino Nesso n1",
             "description": "",
             "link": "https://docs.arduino.cc/hardware/nesso-n1",
