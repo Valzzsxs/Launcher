@@ -13,7 +13,15 @@ type FirmwareEntry = {
   description: string;
   cover: string;
   download: number;
+  github?: string | null;
   versions: FirmwareVersion[];
+};
+
+type DeviceCategory = {
+  category: string;
+  firmware_count: number;
+  versions_count: number;
+  starred: number;
 };
 
 const getPublishedTimestamp = (value: string | undefined) => {
@@ -36,6 +44,7 @@ const sortVersionsByPublishedDate = (versions: FirmwareVersion[]) => {
 };
 
 const API_URL = "https://api.launcherhub.net/giveMeTheList";
+const DEVICES_API_URL = "https://api.launcherhub.net/devices";
 const CDN_COVER = "https://m5burner-cdn.m5stack.com/cover/";
 const CDN_FIRMWARE = "https://m5burner-cdn.m5stack.com/firmware/";
 
@@ -116,6 +125,19 @@ const makeDownloadName = (entry: FirmwareEntry, versionLabel: string) => {
   return `${base || "launcher-firmware"}.bin`;
 };
 
+const formatPublishedDate = (value: string | undefined) => {
+  const timestamp = getPublishedTimestamp(value);
+  if (!Number.isFinite(timestamp)) {
+    return null;
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit"
+  }).format(new Date(timestamp));
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   const list = document.querySelector<HTMLElement>("[data-catalog-list]");
   const emptyState = document.querySelector<HTMLElement>("[data-catalog-empty]");
@@ -124,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const orderSelect = document.querySelector<HTMLSelectElement>("[data-catalog-order]");
   const counter = document.querySelector<HTMLElement>("[data-catalog-count]");
   const status = document.querySelector<HTMLElement>("[data-catalog-status]");
-  let currentOrder: "downloads" | "name" = "downloads";
+  let currentOrder: "downloads" | "name" | "published_at" = "downloads";
 
   if (!list || !emptyState || !searchInput || !categorySelect || !counter || !status) {
     return;
@@ -132,12 +154,19 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!orderSelect) {
     return;
   }
-  currentOrder = orderSelect.value === "name" ? "name" : "downloads";
+  currentOrder =
+    orderSelect.value === "name"
+      ? "name"
+      : orderSelect.value === "published_at"
+        ? "published_at"
+        : "downloads";
 
   const offlineMode = new URLSearchParams(window.location.search).has("offline");
 
   let firmware: FirmwareEntry[] = [];
   let filtered: FirmwareEntry[] = [];
+  let totalFirmwareCount = 0;
+  let initialCategory: string | null = "cardputer";
   const pendingImages = new Set<HTMLImageElement>();
   let imageObserver: IntersectionObserver | null = null;
 
@@ -194,7 +223,24 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const renderCounter = () => {
-    counter.textContent = `${filtered.length} firmware${filtered.length === 1 ? "" : "s"}`;
+    counter.textContent = `${filtered.length} of ${totalFirmwareCount} firmwares`;
+  };
+
+  const getLatestVersionTimestamp = (entry: FirmwareEntry) => {
+    return (entry.versions ?? []).reduce((latest, version) => {
+      return Math.max(latest, getPublishedTimestamp(version.published_at));
+    }, Number.NEGATIVE_INFINITY);
+  };
+
+  const getLatestVersion = (entry: FirmwareEntry) => {
+    return (entry.versions ?? []).reduce<FirmwareVersion | null>((latest, version) => {
+      if (!latest) {
+        return version;
+      }
+      return getPublishedTimestamp(version.published_at) > getPublishedTimestamp(latest.published_at)
+        ? version
+        : latest;
+    }, null);
   };
 
   const buildCard = (entry: FirmwareEntry) => {
@@ -240,9 +286,70 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const title = document.createElement("h3");
     title.className = "card__title";
-    title.textContent = entry.author ? `${entry.name} (${entry.author})` : entry.name;
     title.style.margin = "0";
     title.style.textAlign = "center";
+    title.style.display = "flex";
+    title.style.alignItems = "center";
+    title.style.justifyContent = "center";
+    title.style.gap = "8px";
+
+    const titleText = document.createElement("span");
+    titleText.textContent = entry.author ? `${entry.name} (${entry.author})` : entry.name;
+    title.append(titleText);
+
+    if (entry.github) {
+      const githubLink = document.createElement("a");
+      githubLink.href = entry.github;
+      githubLink.target = "_blank";
+      githubLink.rel = "noopener";
+      githubLink.title = "Open GitHub repository";
+      githubLink.setAttribute("aria-label", "Open GitHub repository");
+      githubLink.style.display = "inline-flex";
+      githubLink.style.alignItems = "center";
+      githubLink.style.color = "var(--accent, #00dd00)";
+      githubLink.style.textDecoration = "none";
+      githubLink.style.flex = "0 0 auto";
+
+      const githubIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      githubIcon.setAttribute("viewBox", "0 0 16 16");
+      githubIcon.setAttribute("width", "18");
+      githubIcon.setAttribute("height", "18");
+      githubIcon.setAttribute("aria-hidden", "true");
+      githubIcon.style.fill = "currentColor";
+
+      const githubPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      githubPath.setAttribute(
+        "d",
+        "M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.5-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.7 7.7 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"
+      );
+      githubIcon.append(githubPath);
+      githubLink.append(githubIcon);
+      title.append(githubLink);
+    }
+
+    const latestVersion = getLatestVersion(entry);
+    const publishedDateLabel = formatPublishedDate(latestVersion?.published_at);
+
+    const metaRow = document.createElement("div");
+    metaRow.style.display = "flex";
+    metaRow.style.flexWrap = "wrap";
+    metaRow.style.alignItems = "center";
+    metaRow.style.justifyContent = "center";
+    metaRow.style.gap = "10px 14px";
+    metaRow.style.fontSize = "0.9rem";
+    metaRow.style.color = "rgba(245, 248, 242, 0.78)";
+
+    if ((entry.download ?? 0) > 0) {
+      const downloadsMeta = document.createElement("span");
+      downloadsMeta.textContent = `${entry.download} downloads`;
+      metaRow.append(downloadsMeta);
+    }
+
+    if (publishedDateLabel) {
+      const publishedMeta = document.createElement("span");
+      publishedMeta.textContent = `Published ${publishedDateLabel}`;
+      metaRow.append(publishedMeta);
+    }
 
     const descriptionWrapper = document.createElement("div");
     descriptionWrapper.style.position = "relative";
@@ -352,7 +459,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     setTimeout(updateReadMoreState, 0);
 
-    body.append(title, descriptionWrapper, readMoreButton, controls);
+    body.append(title, metaRow, descriptionWrapper, readMoreButton, controls);
     article.append(figure, body);
     return article;
   };
@@ -376,6 +483,17 @@ document.addEventListener("DOMContentLoaded", () => {
       filtered.sort((a, b) => a.name.localeCompare(b.name));
       return;
     }
+    if (currentOrder === "published_at") {
+      filtered.sort((a, b) => {
+        const aTime = getLatestVersionTimestamp(a);
+        const bTime = getLatestVersionTimestamp(b);
+        if (aTime !== bTime) {
+          return bTime - aTime;
+        }
+        return a.name.localeCompare(b.name);
+      });
+      return;
+    }
     filtered.sort((a, b) => (b.download ?? 0) - (a.download ?? 0));
   };
 
@@ -394,20 +512,40 @@ document.addEventListener("DOMContentLoaded", () => {
     renderList();
   };
 
-  const populateCategories = () => {
+  const populateCategories = (inputCategories?: string[]) => {
     const categories = new Set<string>(["all"]);
-    firmware.forEach((entry) => {
-      if (entry.category) {
-        categories.add(entry.category);
+    (inputCategories ?? []).forEach((category) => {
+      if (category) {
+        categories.add(category);
       }
     });
+    if (!inputCategories) {
+      firmware.forEach((entry) => {
+        if (entry.category) {
+          categories.add(entry.category);
+        }
+      });
+    }
+
+    const orderedCategories = [
+      "all",
+      ...Array.from(categories)
+        .filter((category) => category !== "all")
+        .sort((a, b) => a.localeCompare(b))
+    ];
     categorySelect.innerHTML = "";
-    Array.from(categories).forEach((category) => {
+    orderedCategories.forEach((category) => {
       const option = document.createElement("option");
       option.value = category;
       option.textContent = category === "all" ? "All categories" : category;
       categorySelect.append(option);
     });
+
+    if (initialCategory && orderedCategories.includes(initialCategory)) {
+      categorySelect.value = initialCategory;
+    } else {
+      categorySelect.value = "all";
+    }
   };
 
   const hydrate = (entries: FirmwareEntry[]) => {
@@ -419,19 +557,43 @@ document.addEventListener("DOMContentLoaded", () => {
     firmware = sortedEntries.filter(
       (item) => Array.isArray(item.versions) && item.versions.some((version) => Boolean(version.file))
     );
+    totalFirmwareCount = firmware.length;
     filtered = [...firmware];
-    populateCategories();
+    if (categorySelect.options.length === 0) {
+      populateCategories();
+    } else {
+      const availableCategories = firmware
+        .map((entry) => entry.category)
+        .filter((category): category is string => Boolean(category));
+      populateCategories(availableCategories);
+    }
     applyFilters();
+  };
+
+  const fetchCategories = async () => {
+    const response = await fetch(DEVICES_API_URL);
+    if (!response.ok) {
+      throw new Error(`Device request failed with status ${response.status}`);
+    }
+    const payload = (await response.json()) as DeviceCategory[];
+    const categories = payload
+      .map((item) => item.category?.trim())
+      .filter((category): category is string => Boolean(category));
+    populateCategories(categories);
   };
 
   const fetchData = async () => {
     try {
-      status.textContent = "Loading firmware list...";
+      status.textContent = "Loading catalog...";
+      const categoryPromise = fetchCategories().catch((error) => {
+        console.error(error);
+      });
       const response = await fetch(API_URL);
       if (!response.ok) {
         throw new Error(`Request failed with status ${response.status}`);
       }
       const payload = (await response.json()) as FirmwareEntry[];
+      await categoryPromise;
       hydrate(payload);
       status.textContent = "";
     } catch (error) {
@@ -450,7 +612,12 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   orderSelect.addEventListener("change", () => {
-    const value = orderSelect.value === "name" ? "name" : "downloads";
+    const value =
+      orderSelect.value === "name"
+        ? "name"
+        : orderSelect.value === "published_at"
+          ? "published_at"
+          : "downloads";
     currentOrder = value;
     sortFiltered();
     renderList();
