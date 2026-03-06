@@ -1,5 +1,4 @@
 #include "powerSave.h"
-#include <SD_MMC.h>
 #include <Wire.h>
 #include <interface.h>
 
@@ -23,9 +22,6 @@ Button *btn1;
 Button *btn2;
 
 void _setup_gpio() {
-    pinMode(15, OUTPUT);
-    digitalWrite(15, HIGH); // PIN_POWER_ON
-
     // setup buttons
     button_config_t bt1 = {
         .type = BUTTON_TYPE_GPIO,
@@ -63,6 +59,7 @@ void _setup_gpio() {
 void _post_setup_gpio() {
     // PWM backlight setup
     ledcAttach(TFT_BL, TFT_BRIGHT_FREQ, TFT_BRIGHT_Bits);
+
     ledcWrite(TFT_BL, 250);
 }
 
@@ -76,11 +73,7 @@ void _setBrightness(uint8_t brightval) {
     else dutyCycle = ((brightval * 250) / 100);
 
     vTaskDelay(10 / portTICK_PERIOD_MS);
-    if (!ledcWrite(TFT_BL, dutyCycle)) {
-        ledcDetach(TFT_BL);
-        ledcAttach(TFT_BL, TFT_BRIGHT_FREQ, TFT_BRIGHT_Bits);
-        ledcWrite(TFT_BL, dutyCycle);
-    }
+    ledcWrite(TFT_BL, dutyCycle);
 }
 
 void InputHandler(void) {

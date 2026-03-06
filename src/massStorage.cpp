@@ -1,4 +1,4 @@
-#if defined(ARDUINO_USB_MODE) && !defined(T_DISPLAY_S3_16MB)
+#if defined(ARDUINO_USB_MODE) && !defined(T_DISPLAY_16MB)
 
 #include "massStorage.h"
 #include "display.h"

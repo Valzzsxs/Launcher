@@ -1,4 +1,4 @@
-#if defined(ARDUINO_USB_MODE) && !defined(T_DISPLAY_S3_16MB)
+#if defined(ARDUINO_USB_MODE) && !defined(T_DISPLAY_16MB)
 
 #ifndef __MASS_STORAGE_H__
 #define __MASS_STORAGE_H__

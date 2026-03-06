@@ -429,7 +429,7 @@ void loop() {
 #endif
          [=]() { loopOptionsWebUi(); }
         },
-#if defined(ARDUINO_USB_MODE) && !defined(ARDUINO_M5STACK_TAB5) && !defined(T_DISPLAY_S3_16MB)
+#if defined(ARDUINO_USB_MODE) && !defined(ARDUINO_M5STACK_TAB5) && !defined(T_DISPLAY_16MB)
         {
 #if TFT_HEIGHT < 135
          "USB", "SD->USB",

@@ -36,7 +36,7 @@
 #include "marauder-mini.h"
 #elif MARAUDERV4
 #include "marauder-v4og.h"
-#elif T_DISPLAY_S3_16MB
+#elif T_DISPLAY_16MB
 #include "lilygo-t-display-16mb.h"
 #elif T_DISPLAY_S3_TOUCH
 #include "lilygo-t-display-s3-touch.h"
