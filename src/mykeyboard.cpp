@@ -787,6 +787,42 @@ String generalKeyboard(
                     redraw = true;
                 }
             }
+#elif defined(HAS_BTN)
+            if (check(SelPress)) {
+                selection_made = true;
+            } else {
+                if (check(NextPress)) {
+                    if ((x >= buttons_number - 1 && y <= -1) || (x >= KeyboardWidth - 1 && y >= 0)) {
+                        y++;
+                        x = 0;
+                    } else x++;
+
+                    if (y >= KeyboardHeight) y = -1;
+                    if (y == -1 && x >= buttons_number) x = 0;
+
+                    redraw = true;
+                }
+                if (check(PrevPress)) {
+                    if (x <= 0) {
+                        y--;
+                        if (y == -1) x = buttons_number - 1;
+                        else x = KeyboardWidth - 1;
+                    } else x--;
+
+                    if (y < -1) {
+                        y = KeyboardHeight - 1;
+                        x = KeyboardWidth - 1;
+                    }
+
+                    redraw = true;
+                }
+                if (check(EscPress)) {
+                    y++;
+                    if (y >= KeyboardHeight) y = -1;
+                    if (y == -1 && x >= buttons_number) x = buttons_number - 1;
+                    redraw = true;
+                }
+            }
 #endif
         } // end of physical input detection
 
