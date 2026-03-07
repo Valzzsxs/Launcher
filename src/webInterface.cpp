@@ -421,6 +421,12 @@ void configureWebServer() {
             serveWebUIFile(request, "index.html", "text/html", true, index_html, index_html_size);
         }
     });
+
+    server->on("/", HTTP_POST, [](AsyncWebServerRequest *request) {
+        if (checkUserWebAuth(request)) {
+            request->send(200, "text/plain", "OK");
+        }
+    });
     server->on("/systeminfo", HTTP_GET, [](AsyncWebServerRequest *request) {
         char response_body[300];
         uint64_t SDTotalBytes = SDM.totalBytes();
