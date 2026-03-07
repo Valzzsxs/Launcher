@@ -787,6 +787,40 @@ String generalKeyboard(
                     redraw = true;
                 }
             }
+#elif defined(HAS_BTN)
+            if (check(SelPress)) {
+                selection_made = true;
+            } else {
+                // Tombol bawah (NextPress): pindah x (kanan)
+                if (check(NextPress)) {
+                    x++;
+                    // Wrap around in the current row
+                    if (y == -1 && x >= buttons_number) x = 0;
+                    else if (y >= 0 && x >= KeyboardWidth) x = 0;
+
+                    redraw = true;
+                }
+                // Tombol atas (PrevPress): pindah y (bawah)
+                if (check(PrevPress)) {
+                    y++;
+                    // Wrap around to top row
+                    if (y >= KeyboardHeight) y = -1;
+
+                    // Constrain x if top row has fewer buttons
+                    if (y == -1 && x >= buttons_number) x = buttons_number - 1;
+
+                    redraw = true;
+                }
+                // Tombol atas double click/hold (EscPress): pindah y (atas) -> mundur row
+                if (check(EscPress)) {
+                    y--;
+                    if (y < -1) y = KeyboardHeight - 1;
+
+                    if (y == -1 && x >= buttons_number) x = buttons_number - 1;
+
+                    redraw = true;
+                }
+            }
 #endif
         } // end of physical input detection
 
