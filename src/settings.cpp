@@ -9,13 +9,19 @@
 #include "partitioner.h"
 #include "sd_functions.h"
 #include <FS.h>
+#if defined(USE_LITTLEFS)
+#include <LittleFS.h>
+#else
 #include <SD.h>
+#endif
 #include <cstdio>
 #include <cstdlib>
 #include <globals.h>
 #include <memory>
+#if !defined(USE_LITTLEFS)
 #if !defined(SDM_SD)
 #include <SD_MMC.h>
+#endif
 #endif
 namespace {
 uint32_t crc32(const uint8_t *data, size_t length) {

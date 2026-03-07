@@ -11,9 +11,13 @@
 #include <map>
 
 #include <FS.h>
+#if defined(USE_LITTLEFS)
+#include <LittleFS.h>
+#else
 #include <SD.h>
 #if !defined(SDM_SD)
 #include <SD_MMC.h>
+#endif
 #endif
 
 struct Config {

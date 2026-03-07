@@ -7,6 +7,9 @@
 #include <esp_ota_ops.h>
 #include <esp_partition.h>
 #include <globals.h>
+#if defined(USE_LITTLEFS)
+#include <LittleFS.h>
+#endif
 SPIClass sdcardSPI;
 String fileToCopy;
 String fileToUse;
@@ -53,6 +56,17 @@ Exit:
 ** Description:   Start SD Card
 ***************************************************************************************/
 bool setupSdCard() {
+#if defined(USE_LITTLEFS)
+    if (!LittleFS.begin(true)) {
+        Serial.println("LittleFS Mount Failed");
+        sdcardMounted = false;
+        return false;
+    } else {
+        Serial.println("LittleFS mounted successfully");
+        sdcardMounted = true;
+        return true;
+    }
+#else
 #if !defined(SDM_SD)                    // fot Lilygo T-Display S3 with lilygo shield
     if (!SD_MMC.begin("/sdcard", true)) // One bit mode
 #elif (TFT_MOSI == SDCARD_MOSI)
@@ -89,6 +103,7 @@ bool setupSdCard() {
         sdcardMounted = true;
         return true;
     }
+#endif
 }
 
 /***************************************************************************************
@@ -96,7 +111,11 @@ bool setupSdCard() {
 ** Description:   Turn Off SDCard, set sdcardMounted state to false
 ***************************************************************************************/
 void closeSdCard() {
+#if defined(USE_LITTLEFS)
+    LittleFS.end();
+#else
     SDM.end();
+#endif
     sdcardMounted = false;
 }
 
