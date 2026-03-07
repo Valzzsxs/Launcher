@@ -325,7 +325,9 @@ function CreateFolder(folders) {
     if (isNullOrEmpty(folderName)) {
         window.alert("Invalid Folder Name");
     } else {
-        downloadDeleteButton(_("actualFolder").value + "/" + folderName, 'create');
+        const actualFolder = _("actualFolder").value;
+        const newPath = actualFolder === "/" ? "/" + folderName : actualFolder + "/" + folderName;
+        downloadDeleteButton(newPath, 'create');
     }
 }
 const addHighlight = (event) => {
