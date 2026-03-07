@@ -791,35 +791,33 @@ String generalKeyboard(
             if (check(SelPress)) {
                 selection_made = true;
             } else {
+                // Tombol bawah (NextPress): pindah x (kanan)
                 if (check(NextPress)) {
-                    if ((x >= buttons_number - 1 && y <= -1) || (x >= KeyboardWidth - 1 && y >= 0)) {
-                        y++;
-                        x = 0;
-                    } else x++;
-
-                    if (y >= KeyboardHeight) y = -1;
+                    x++;
+                    // Wrap around in the current row
                     if (y == -1 && x >= buttons_number) x = 0;
+                    else if (y >= 0 && x >= KeyboardWidth) x = 0;
 
                     redraw = true;
                 }
+                // Tombol atas (PrevPress): pindah y (bawah)
                 if (check(PrevPress)) {
-                    if (x <= 0) {
-                        y--;
-                        if (y == -1) x = buttons_number - 1;
-                        else x = KeyboardWidth - 1;
-                    } else x--;
+                    y++;
+                    // Wrap around to top row
+                    if (y >= KeyboardHeight) y = -1;
 
-                    if (y < -1) {
-                        y = KeyboardHeight - 1;
-                        x = KeyboardWidth - 1;
-                    }
+                    // Constrain x if top row has fewer buttons
+                    if (y == -1 && x >= buttons_number) x = buttons_number - 1;
 
                     redraw = true;
                 }
+                // Tombol atas double click/hold (EscPress): pindah y (atas) -> mundur row
                 if (check(EscPress)) {
-                    y++;
-                    if (y >= KeyboardHeight) y = -1;
+                    y--;
+                    if (y < -1) y = KeyboardHeight - 1;
+
                     if (y == -1 && x >= buttons_number) x = buttons_number - 1;
+
                     redraw = true;
                 }
             }
