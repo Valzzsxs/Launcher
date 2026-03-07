@@ -11,7 +11,9 @@
 #include <interface.h>
 #include <pre_compiler.h>
 #include <vector>
-#if !defined(SDM)
+#if defined(USE_LITTLEFS)
+#define SDM LittleFS
+#elif !defined(SDM)
 #define SDM SD
 #define SDM_SD
 #endif
